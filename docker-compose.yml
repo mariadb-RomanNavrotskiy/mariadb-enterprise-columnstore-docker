@@ -1,0 +1,95 @@
+version: '3'
+
+services:
+
+  pm1:
+    build:
+      context: .
+      args:
+        TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+    image: ${IMAGE_NAME}
+    hostname: ${PM1}
+    container_name: ${PM1}
+    volumes:
+      - data1:/var/lib/columnstore/data1
+      - data2:/var/lib/columnstore/data2
+      - data3:/var/lib/columnstore/data3
+      - storagemanager:/var/lib/columnstore/storagemanager
+    env_file:
+      - .env
+    depends_on:
+      - "pm3"
+    links:
+      - "pm2"
+      - "pm3"
+    ports:
+      - 3307:3306
+    mem_limit: ${COLUMNSTORE_RAM}
+
+  pm2:
+    build:
+      context: .
+      args:
+        TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+    image: ${IMAGE_NAME}
+    hostname: ${PM2}
+    container_name: ${PM2}
+    volumes:
+      - data1:/var/lib/columnstore/data1
+      - data2:/var/lib/columnstore/data2
+      - data3:/var/lib/columnstore/data3
+      - storagemanager:/var/lib/columnstore/storagemanager
+    env_file:
+      - .env
+    depends_on:
+      - "pm3"
+    links:
+      - "pm3"
+    ports:
+      - 3308:3306
+    mem_limit: ${COLUMNSTORE_RAM}
+
+  pm3:
+    build:
+      context: .
+      args:
+        TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+    image: ${IMAGE_NAME}
+    hostname: ${PM3}
+    container_name: ${PM3}
+    volumes:
+      - data1:/var/lib/columnstore/data1
+      - data2:/var/lib/columnstore/data2
+      - data3:/var/lib/columnstore/data3
+      - storagemanager:/var/lib/columnstore/storagemanager
+    env_file:
+      - .env
+    ports:
+      - 3309:3306
+    mem_limit: ${COLUMNSTORE_RAM}
+
+  mx1:
+    image: mariadb/maxscale
+    hostname: ${MX1}
+    container_name: ${MX1}
+    volumes:
+      - maxscale:/var/lib/maxscale
+    depends_on:
+      - "pm1"
+    env_file:
+      - .env
+    links:
+      - "pm1"
+      - "pm2"
+      - "pm3"
+    ports:
+      - 3310:3306
+      - 8989:8989
+    mem_limit: ${MAXSCALE_RAM}
+
+volumes:
+  data1:
+  data2:
+  data3:
+  maxscale:
+  storagemanager:
