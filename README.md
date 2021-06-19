@@ -132,7 +132,7 @@ https://{server}:{port}/cmapi/{version}/{route}/{command}
 *   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/status`
 *   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/start`
 *   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/shutdown`
-*   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/add-node`
+*   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/node`
 *   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/remove-node`
 *   `https://127.0.0.1:8640/cmapi/0.4.0/cluster/mode-set`
 
@@ -159,7 +159,7 @@ curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/shutdown --header 'Con
 ```
 ###### Add Node:
 ```
-curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/add-node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "<replace_with_desired_hostname>"}' -k | jq .
+curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "<replace_with_desired_hostname>"}' -k | jq .
 ```
 ###### Remove Node:
 ```
