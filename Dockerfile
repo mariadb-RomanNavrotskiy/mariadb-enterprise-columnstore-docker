@@ -72,7 +72,8 @@ RUN chmod +x /usr/bin/tini \
     /usr/bin/cmapi-start \
     /usr/bin/cmapi-stop \
     /usr/bin/cmapi-restart \
-    /usr/bin/mcs-process
+    /usr/bin/mcs-process && \
+    sed -i '126s/smcat/SMCAT/g' /usr/bin/mcs-loadbrm.py
 
 # Stream Edit Monit Config
 RUN sed -i 's|set daemon\s.30|set daemon 5|g' /etc/monitrc && \

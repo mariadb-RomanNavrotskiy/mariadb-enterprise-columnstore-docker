@@ -27,6 +27,7 @@ CEJ_PASS="${CEJ_PASS:-C0lumnStore!}"
 MAX_USER="${MAX_USER:-maxscale}"
 MAX_PASS="${MAX_PASS:-C0lumnStore!}"
 MAX_HOST="${MAX_HOST:-%}"
+PM1="${PM1:-127.0.0.1}"
 REP_USER="${REP_USER:-idbrep}"
 REP_PASS="${REP_PASS:-C0lumnStore!}"
 REP_HOST="${REP_HOST:-%}"
@@ -270,11 +271,12 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
 
     /usr/share/mysql/mysql.server stop
 
-    echo 'Stopping Columnstore processes...'
-
+    echo 'Saving BRM'
     if [ ! -z "$(pidof "${PROGS[@]}")" ]; then
         $MCS_INSTALL_BIN/mcs-savebrm.py
     fi
+
+    echo 'Stopping Columnstore processes...'
     for i in "${PROGS[@]}"; do
         if [ ! -z "$(pidof $i)" ]; then
             echo "Sending SIGTERM to $i"
