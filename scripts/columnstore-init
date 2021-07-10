@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Define Paths
+COLXML='/etc/columnstore/Columnstore.xml'
 IFLAG='/etc/columnstore/container-initialized'
 LOG_PREFIX='/var/log/mariadb/columnstore'
 MCS_INSTALL_BIN='/usr/bin'
@@ -71,9 +72,9 @@ sed -i "s@^x-api-key.*@x-api-key = '${CMAPI_KEY//&/\\&}'@" /etc/columnstore/cmap
 
 # Storagemanager Configuration
 if [ $USE_S3_STORAGE = true ]; then
-    $MCS_INSTALL_BIN/mcsSetConfig Installation DBRootStorageType "storagemanager"
-    $MCS_INSTALL_BIN/mcsSetConfig StorageManager Enabled "Y"
-    $MCS_INSTALL_BIN/mcsSetConfig SystemConfig DataFilePlugin "libcloudio.so"
+    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/Installation/DBRootStorageType' -v "storagemanager" $COLXML
+    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/StorageManager/Enabled' -v "Y" $COLXML
+    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/SystemConfig/DataFilePlugin' -v "libcloudio.so" $COLXML
     sed -i "s|cache_size = 2g|cache_size = 4g|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^service =.*|service = S3|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^region =.*|region = $S3_REGION|" /etc/columnstore/storagemanager.cnf
@@ -183,9 +184,9 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
             echo 'ERROR: During cross engine join user creation.'
             exit 1
         fi
-        $MCS_INSTALL_BIN/mcsSetConfig CrossEngineSupport User "$CEJ_USER"
-        $MCS_INSTALL_BIN/mcsSetConfig CrossEngineSupport Password "$CEJ_PASS"
-        $MCS_INSTALL_BIN/mcsSetConfig CrossEngineSupport Host "127.0.0.1"
+        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/User' -v "$CEJ_USER" $COLXML
+        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/Password' -v "$CEJ_PASS" $COLXML
+        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/host' -v "127.0.0.1" $COLXML
         echo 'Cross engine join user created'
 
         # Set Up Admin User

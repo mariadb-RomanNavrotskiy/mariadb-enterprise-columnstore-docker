@@ -12,7 +12,7 @@ echo "[Starting MariaDB Columnstore]"
 
 # Intialize Container If Necessary
 if [ ! -e $IFLAG ]; then
-    $MCS_INSTALL_BIN/columnstore-init &> /dev/stdout #$LOG_PREFIX/columnstore-init.log
+    $MCS_INSTALL_BIN/columnstore-init &> $LOG_PREFIX/columnstore-init.log
     if [ $? -ne 0 ]; then
         echo "ERROR: During Initialization."
         exit 1
