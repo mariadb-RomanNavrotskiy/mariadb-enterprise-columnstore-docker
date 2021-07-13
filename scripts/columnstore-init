@@ -72,9 +72,9 @@ sed -i "s@^x-api-key.*@x-api-key = '${CMAPI_KEY//&/\\&}'@" /etc/columnstore/cmap
 
 # Storagemanager Configuration
 if [ $USE_S3_STORAGE = true ]; then
-    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/Installation/DBRootStorageType' -v "storagemanager" $COLXML
-    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/StorageManager/Enabled' -v "Y" $COLXML
-    $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/SystemConfig/DataFilePlugin' -v "libcloudio.so" $COLXML
+    xmlstarlet ed -L -u '/Columnstore/Installation/DBRootStorageType' -v "StorageManager" $COLXML
+    xmlstarlet ed -L -u '/Columnstore/StorageManager/Enabled' -v "Y" $COLXML
+    xmlstarlet ed -L -u '/Columnstore/SystemConfig/DataFilePlugin' -v "libcloudio.so" $COLXML
     sed -i "s|cache_size = 2g|cache_size = 4g|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^service =.*|service = S3|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^region =.*|region = $S3_REGION|" /etc/columnstore/storagemanager.cnf
@@ -174,7 +174,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
     if [[ $MARIADB_RUNNING == *"alive"* ]]; then
 
         # Set Up Cross Engine Join User
-        $MCS_INSTALL_BIN/mariadb -e "
+        mariadb -e "
             GRANT SELECT, PROCESS
             ON *.* TO '$CEJ_USER'@'127.0.0.1'
             IDENTIFIED BY '$CEJ_PASS';
@@ -184,14 +184,14 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
             echo 'ERROR: During cross engine join user creation.'
             exit 1
         fi
-        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/User' -v "$CEJ_USER" $COLXML
-        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/Password' -v "$CEJ_PASS" $COLXML
-        $MCS_INSTALL_BIN/xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/host' -v "127.0.0.1" $COLXML
+        xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/User' -v "$CEJ_USER" $COLXML
+        xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/Password' -v "$CEJ_PASS" $COLXML
+        xmlstarlet ed -L -u '/Columnstore/CrossEngineSupport/host' -v "127.0.0.1" $COLXML
         echo 'Cross engine join user created'
 
         # Set Up Admin User
         if [ ! -z $ADMIN_USER ] && [ ! -z $ADMIN_PASS ]; then
-            $MCS_INSTALL_BIN/mariadb -e "
+            mariadb -e "
                 GRANT ALL PRIVILEGES
                 ON *.* TO '$ADMIN_USER'@'$ADMIN_HOST'
                 IDENTIFIED BY '$ADMIN_PASS'
@@ -206,7 +206,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
         fi
 
         # Set Up Replication User
-        $MCS_INSTALL_BIN/mariadb -e "
+        mariadb -e "
             GRANT REPLICATION SLAVE ADMIN,
             REPLICATION SLAVE,
             BINLOG MONITOR,
@@ -223,7 +223,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
         echo 'Replication user created'
 
         # Set Up MaxScale User
-        $MCS_INSTALL_BIN/mariadb -e "
+        mariadb -e "
             GRANT BINLOG ADMIN,
             READ_ONLY ADMIN,
             RELOAD,
@@ -240,7 +240,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
             echo "ERROR: Creating user '$MAX_USER'@'$MAX_HOST'."
             exit 1
         fi
-        $MCS_INSTALL_BIN/mariadb -e "
+        mariadb -e "
             GRANT SELECT ON mysql.columns_priv TO '$MAX_USER'@'$MAX_HOST';
             GRANT SELECT ON mysql.db TO '$MAX_USER'@'$MAX_HOST';
             GRANT SELECT ON mysql.procs_priv TO '$MAX_USER'@'$MAX_HOST';
@@ -256,7 +256,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
         echo 'MaxScale user created'
 
         # Securing MariaDB Installation
-        $MCS_INSTALL_BIN/mariadb -e "
+        mariadb -e "
             DROP DATABASE IF EXISTS test;
             DELETE FROM mysql.user WHERE User='';
         "
