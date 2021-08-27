@@ -1,12 +1,12 @@
 # vim:set ft=dockerfile:
 
 # Setup A Template Image
-FROM centos:8
+FROM rockylinux/rockylinux:8
 
 # Define ENV Variables
 ARG TOKEN=${TOKEN}
 ENV TINI_VERSION=v0.18.0
-ENV MARIADB_VERSION=10.5
+ENV MARIADB_VERSION=10.6
 
 # Add MariaDB Enterprise Repo
 ADD https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup /tmp
@@ -52,7 +52,7 @@ RUN dnf -y install \
      MariaDB-client \
      MariaDB-server \
      MariaDB-columnstore-engine \
-     mariadb-columnstore-cmapi
+     MariaDB-columnstore-cmapi
 
 # Copy Config Files & Scripts To Image
 COPY config/etc/ /etc/
@@ -73,8 +73,7 @@ RUN chmod +x /usr/bin/tini \
     /usr/bin/cmapi-start \
     /usr/bin/cmapi-stop \
     /usr/bin/cmapi-restart \
-    /usr/bin/mcs-process && \
-    sed -i '126s/smcat/SMCAT/g' /usr/bin/mcs-loadbrm.py
+    /usr/bin/mcs-process
 
 # Stream Edit Monit Config
 RUN sed -i 's|set daemon\s.30|set daemon 5|g' /etc/monitrc && \
