@@ -18,13 +18,21 @@ RUN chmod +x /tmp/mariadb_es_repo_setup && \
 RUN dnf -y install epel-release && \
     dnf -y upgrade
 
+# Copy The Google Cloud SDK Repo To Image
+COPY config/*.repo /etc/yum.repos.d/
+
 # Install Various Packages/Tools
-RUN dnf -y install bind-utils \
+RUN dnf -y install awscli \
+    bind-utils \
     bc \
     boost \
+    cracklib \
+    cracklib-dicts \
     expect \
     git \
     glibc-langpack-en \
+    google-cloud-sdk \
+    htop \
     jemalloc \
     jq \
     less \
@@ -33,6 +41,8 @@ RUN dnf -y install bind-utils \
     nano \
     net-tools \
     openssl \
+    perl \
+    perl-DBI \
     rsyslog \
     snappy \
     sudo \
@@ -46,13 +56,18 @@ ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 
-# Install MariaDB Packages
+# Install MariaDB Packages & Load Time Zone Info
 RUN dnf -y install \
      MariaDB-shared \
      MariaDB-client \
      MariaDB-server \
+     MariaDB-backup \
+     MariaDB-cracklib-password-check \
      MariaDB-columnstore-engine \
-     MariaDB-columnstore-cmapi
+     MariaDB-columnstore-cmapi && \
+     /usr/share/mysql/mysql.server start && \
+     mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
+     /usr/share/mysql/mysql.server stop
 
 # Copy Config Files & Scripts To Image
 COPY config/etc/ /etc/
