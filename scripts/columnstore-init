@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Define Paths
+AWSHOME='/root/.aws'
 COLXML='/etc/columnstore/Columnstore.xml'
 IFLAG='/etc/columnstore/container-initialized'
 LOG_PREFIX='/var/log/mariadb/columnstore'
@@ -83,6 +84,17 @@ if [ $USE_S3_STORAGE = true ]; then
     sed -i "s|^# endpoint =.*|endpoint = $S3_ENDPOINT|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^# aws_access_key_id =.*|aws_access_key_id = $S3_ACCESS_KEY_ID|" /etc/columnstore/storagemanager.cnf
     sed -i "s|^# aws_secret_access_key =.*|aws_secret_access_key = $S3_SECRET_ACCESS_KEY|" /etc/columnstore/storagemanager.cnf
+fi
+
+# Add AWS CLI Credentials
+if [[ $USE_AWS_CLI == true ]]; then
+    mkdir $AWSHOME
+    cat <<EOT >> $AWSHOME/credentials
+$RET
+[default]
+aws_access_key_id = $S3_ACCESS_KEY_ID
+aws_secret_access_key = $S3_SECRET_ACCESS_KEY$RET
+EOT
 fi
 
 # Verify All Programs Are Available

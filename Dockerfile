@@ -31,6 +31,7 @@ RUN dnf -y install awscli \
     expect \
     git \
     glibc-langpack-en \
+    glances \
     google-cloud-sdk \
     htop \
     jemalloc \
