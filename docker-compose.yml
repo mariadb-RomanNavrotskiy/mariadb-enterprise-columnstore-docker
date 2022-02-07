@@ -69,7 +69,7 @@ services:
     mem_limit: ${COLUMNSTORE_RAM}
 
   mx1:
-    image: mariadb/maxscale:6.1.1
+    image: mariadb/maxscale:latest
     hostname: ${MX1}
     container_name: ${MX1}
     volumes:
