@@ -44,6 +44,7 @@ RUN dnf -y install awscli \
     openssl \
     perl \
     perl-DBI \
+    procps-ng \
     rsyslog \
     snappy \
     sudo \
