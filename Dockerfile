@@ -60,25 +60,25 @@ ENV LANGUAGE=en_US.UTF-8
 
 # Install MariaDB Packages & Load Time Zone Info
 RUN dnf -y install \
-     MariaDB-shared \
-     MariaDB-client \
-     MariaDB-server \
-     MariaDB-backup \
-     MariaDB-cracklib-password-check \
-     MariaDB-columnstore-engine \
-     MariaDB-columnstore-cmapi && \
-     /usr/share/mysql/mysql.server start && \
-     mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
-     /usr/share/mysql/mysql.server stop
+    MariaDB-shared \
+    MariaDB-client \
+    MariaDB-server \
+    MariaDB-backup \
+    MariaDB-cracklib-password-check \
+    MariaDB-columnstore-engine \
+    MariaDB-columnstore-cmapi && \
+    /usr/share/mysql/mysql.server start && \
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
+    /usr/share/mysql/mysql.server stop
 
 # Copy Config Files & Scripts To Image
 COPY config/etc/ /etc/
 COPY scripts/provision \
-     scripts/columnstore-init \
-     scripts/cmapi-start \
-     scripts/cmapi-stop \
-     scripts/cmapi-restart \
-     scripts/mcs-process /usr/bin/
+    scripts/columnstore-init \
+    scripts/cmapi-start \
+    scripts/cmapi-stop \
+    scripts/cmapi-restart \
+    scripts/mcs-process /usr/bin/
 
 # Add Tini Init Process
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
