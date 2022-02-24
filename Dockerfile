@@ -18,9 +18,6 @@ RUN chmod +x /tmp/mariadb_es_repo_setup && \
 RUN dnf -y install epel-release && \
     dnf -y upgrade
 
-# Copy The Google Cloud SDK Repo To Image
-COPY config/*.repo /etc/yum.repos.d/
-
 # Install Various Packages/Tools
 RUN dnf -y install awscli \
     bind-utils \
@@ -32,7 +29,6 @@ RUN dnf -y install awscli \
     git \
     glibc-langpack-en \
     glances \
-    google-cloud-sdk \
     htop \
     jemalloc \
     jq \
@@ -45,13 +41,16 @@ RUN dnf -y install awscli \
     perl \
     perl-DBI \
     procps-ng \
+    redhat-lsb-core \
     rsyslog \
     snappy \
-    sudo \
     tcl \
+    tzdata \
     vim \
     wget \
-    xmlstarlet
+    xmlstarlet && \
+    ln -s /usr/lib/lsb/init-functions /etc/init.d/functions && \
+    rm -rf /usr/share/zoneinfo/tzdata.zi /usr/share/zoneinfo/leapseconds
 
 # Default Locale Variables
 ENV LC_ALL=en_US.UTF-8
@@ -66,10 +65,7 @@ RUN dnf -y install \
     MariaDB-backup \
     MariaDB-cracklib-password-check \
     MariaDB-columnstore-engine \
-    MariaDB-columnstore-cmapi && \
-    /usr/share/mysql/mysql.server start && \
-    mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
-    /usr/share/mysql/mysql.server stop
+    MariaDB-columnstore-cmapi
 
 # Copy Config Files & Scripts To Image
 COPY config/etc/ /etc/

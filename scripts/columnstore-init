@@ -182,9 +182,10 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
         curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "127.0.0.1"}' -k &> /dev/null &
     fi
 
-    # Set Up MariaDB Cross Engine Join & Replication
     MARIADB_RUNNING=$(mariadb-admin ping)
     if [[ $MARIADB_RUNNING == *"alive"* ]]; then
+        # Load Time Zone Data
+        mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql
 
         # Set Up Cross Engine Join User
         mariadb -e "
