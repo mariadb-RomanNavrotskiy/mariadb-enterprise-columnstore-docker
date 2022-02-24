@@ -5,7 +5,7 @@ FROM rockylinux/rockylinux:8
 
 # Define ENV Variables
 ARG TOKEN=${TOKEN}
-ENV TINI_VERSION=v0.18.0
+ENV TINI_VERSION=v0.19.0
 ENV MARIADB_VERSION=10.6
 
 # Add MariaDB Enterprise Repo
@@ -63,8 +63,12 @@ RUN dnf -y install \
     MariaDB-client \
     MariaDB-server \
     MariaDB-backup \
-    MariaDB-cracklib-password-check \
-    MariaDB-columnstore-engine \
+    MariaDB-cracklib-password-check && \
+    cp /usr/share/mysql/mysql.server /etc/init.d/mariadb && \
+    /etc/init.d/mariadb start && \
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
+    /etc/init.d/mariadb stop && \
+    dnf -y install MariaDB-columnstore-engine \
     MariaDB-columnstore-cmapi
 
 # Copy Config Files & Scripts To Image
@@ -107,6 +111,7 @@ RUN chmod +x /usr/bin/docker-entrypoint.sh && \
     dnf clean all && \
     rm -rf /var/cache/dnf && \
     find /var/log -type f -exec cp /dev/null {} \; && \
+    rm -rf /var/lib/mysql/*.err && \
     cat /dev/null > ~/.bash_history && \
     history -c
 

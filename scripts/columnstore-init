@@ -167,7 +167,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
 
     echo 'Starting MariaDB server...'
 
-    /usr/share/mysql/mysql.server start
+    /etc/init.d/mariadb start
 
     if [[ $CLUSTER == false ]]; then
         echo 'Starting CMAPI'
@@ -284,7 +284,7 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
 
     echo 'Stopping MariaDB server...'
 
-    /usr/share/mysql/mysql.server stop
+    /etc/init.d/mariadb stop
 
     echo 'Saving BRM'
     if [ ! -z "$(pidof "${PROGS[@]}")" ]; then
@@ -333,7 +333,7 @@ else
     # Start Replicas
     echo 'Starting replicas...'
 
-    /usr/share/mysql/mysql.server start
+    /etc/init.d/mariadb start
 
     # Configure Replication On Slaves
     echo 'Setting up replication...'
@@ -355,7 +355,7 @@ else
     # Stop Replicas
     echo 'Stopping replicas...'
 
-    /usr/share/mysql/mysql.server stop
+    /etc/init.d/mariadb stop
 
 fi
 

@@ -41,6 +41,6 @@ PYTHONPATH=/usr/share/columnstore/cmapi/deps /usr/share/columnstore/cmapi/python
 echo "CMAPI PID = $!"
 
 # Start MariaDB
-/usr/share/mysql/mysql.server restart
+/etc/init.d/mariadb restart
 
 exit 0
