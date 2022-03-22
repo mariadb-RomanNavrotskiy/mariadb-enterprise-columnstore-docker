@@ -7,6 +7,7 @@ services:
       context: .
       args:
         TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+        VERSION: ${MARIADB_SERVER_VERSION}
     image: ${IMAGE_NAME}
     hostname: ${PM1}
     container_name: ${PM1}
@@ -31,6 +32,7 @@ services:
       context: .
       args:
         TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+        VERSION: ${MARIADB_SERVER_VERSION}
     image: ${IMAGE_NAME}
     hostname: ${PM2}
     container_name: ${PM2}
@@ -54,6 +56,7 @@ services:
       context: .
       args:
         TOKEN: ${MARIADB_ENTERPRISE_TOKEN}
+        VERSION: ${MARIADB_SERVER_VERSION}
     image: ${IMAGE_NAME}
     hostname: ${PM3}
     container_name: ${PM3}

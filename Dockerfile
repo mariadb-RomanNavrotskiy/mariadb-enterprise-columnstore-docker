@@ -1,18 +1,15 @@
 # vim:set ft=dockerfile:
 
 # Setup A Template Image
-FROM rockylinux/rockylinux:8
+FROM rockylinux
 
-# Define ENV Variables
+# Define ARG Variables
 ARG TOKEN=${TOKEN}
-ENV TINI_VERSION=v0.19.0
-ENV MARIADB_VERSION=10.6
+ARG VERSION=${VERSION}
 
 # Add MariaDB Enterprise Repo
-ADD https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup /tmp
-
-RUN chmod +x /tmp/mariadb_es_repo_setup && \
-    /tmp/mariadb_es_repo_setup --mariadb-server-version=${MARIADB_VERSION} --token=${TOKEN} --apply
+RUN curl -LsS https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup | \
+    bash -s -- --mariadb-server-version=${VERSION} --token=${TOKEN} --apply
 
 # Update System
 RUN dnf -y install epel-release && \
@@ -28,7 +25,6 @@ RUN dnf -y install awscli \
     expect \
     git \
     glibc-langpack-en \
-    glances \
     htop \
     jemalloc \
     jq \
@@ -45,6 +41,7 @@ RUN dnf -y install awscli \
     rsyslog \
     snappy \
     tcl \
+    tini \
     tzdata \
     vim \
     wget \
@@ -52,10 +49,10 @@ RUN dnf -y install awscli \
     ln -s /usr/lib/lsb/init-functions /etc/init.d/functions && \
     rm -rf /usr/share/zoneinfo/tzdata.zi /usr/share/zoneinfo/leapseconds
 
-# Default Locale Variables
-ENV LC_ALL=en_US.UTF-8
+# Define ENV Variables
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
 # Install MariaDB Packages & Load Time Zone Info
 RUN dnf -y install \
@@ -78,21 +75,19 @@ COPY scripts/provision \
     scripts/cmapi-start \
     scripts/cmapi-stop \
     scripts/cmapi-restart \
+    scripts/start-services \
     scripts/mcs-process /usr/bin/
 
-# Add Tini Init Process
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
-
 # Make Scripts Executable
-RUN chmod +x /usr/bin/tini \
-    /usr/bin/provision \
+RUN chmod +x /usr/bin/provision \
     /usr/bin/columnstore-init \
     /usr/bin/cmapi-start \
     /usr/bin/cmapi-stop \
     /usr/bin/cmapi-restart \
+    /usr/bin/start-services \
     /usr/bin/mcs-process
 
-# Stream Edit Monit Config
+# Stream Edit Some Configs
 RUN sed -i 's|set daemon\s.30|set daemon 5|g' /etc/monitrc && \
     sed -i 's|#.*with start delay\s.*240|  with start delay 60|' /etc/monitrc
 
@@ -117,4 +112,4 @@ RUN chmod +x /usr/bin/docker-entrypoint.sh && \
 
 # Bootstrap
 ENTRYPOINT ["/usr/bin/tini","--","docker-entrypoint.sh"]
-CMD cmapi-start && monit -I
+CMD ["start-services"]
