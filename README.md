@@ -22,7 +22,7 @@ Also make sure to grab your download credentials from our website:
 
 1.  ```$ git clone https://github.com/mariadb-corporation/mariadb-enterprise-columnstore-docker.git```
 1.  ```$ cd mariadb-enterprise-columnstore-docker```
-1.  ```docker build . --tag mcs_image --build-arg TOKEN=your_token_goes_here```
+1.  ```docker build . --tag mcs_image --build-arg VERSION=10.6 --build-arg TOKEN=your_token_goes_here```
 1.  ```docker run -p 3306:3306 --name mcs1 mcs_image```
 
 #### Optional Environment Variables
@@ -163,7 +163,7 @@ curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content
 ```
 ###### Remove Node:
 ```
-curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "<replace_with_desired_hostname>"}' -k | jq .
+curl -s -X DELETE https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "<replace_with_desired_hostname>"}' -k | jq .
 ```
 
 ###### Set Read Only Mode:
