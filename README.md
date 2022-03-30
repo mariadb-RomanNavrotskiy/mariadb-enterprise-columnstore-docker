@@ -22,8 +22,8 @@ Also make sure to grab your download credentials from our website:
 
 1.  ```$ git clone https://github.com/mariadb-corporation/mariadb-enterprise-columnstore-docker.git```
 1.  ```$ cd mariadb-enterprise-columnstore-docker```
-1.  ```docker build . --tag mcs_image --build-arg VERSION=10.6 --build-arg TOKEN=your_token_goes_here```
-1.  ```docker run -p 3306:3306 --name mcs1 mcs_image```
+1.  ```$ docker build . --tag mcs_image --build-arg VERSION=10.6 --build-arg TOKEN=your_mariadb_enterprise_token```
+1.  ```$ docker run -d -p 3306:3306 --hostname mcs1 --env PM1=mcs1 --name mcs1 mcs_image```
 
 #### Optional Environment Variables
 
@@ -47,17 +47,17 @@ Also make sure to grab your download credentials from our website:
 #### Example Use
 ```
 docker run -d -p 3306:3306 \
--e USE_S3_STORAGE=true \
--e S3_BUCKET=my-bucket \
--e S3_ENDPOINT=s3.myendpoint.com \
--e S3_ACCESS_KEY_ID=myAccessKeyId \
--e S3_SECRET_ACCESS_KEY=mySuperSecr3tAcceS$key \
+--env USE_S3_STORAGE=true \
+--env S3_BUCKET=my-bucket \
+--env S3_ENDPOINT=s3.myendpoint.com \
+--env S3_ACCESS_KEY_ID=myAccessKeyId \
+--env S3_SECRET_ACCESS_KEY=mySuperSecr3tAcceS$key \
 --name mcs1 mcs_image
 ```
 
 #### MariaDB Access
 
-*   PM1: ```$ docker exec -it mcs1 mariadb```
+*   ```$ docker exec -it mcs1 mariadb```
 
 ## Docker-Compose Cluster Instructions
 

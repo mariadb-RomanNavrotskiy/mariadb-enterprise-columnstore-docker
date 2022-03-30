@@ -169,19 +169,6 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
 
     /etc/init.d/mariadb start
 
-    if [[ $CLUSTER == false ]]; then
-        echo 'Starting CMAPI'
-        touch $LOG_PREFIX/cmapi_server.log && chmod 666 $LOG_PREFIX/cmapi_server.log
-        cd /usr/share/columnstore/cmapi || exit
-        PYTHONPATH=/usr/share/columnstore/cmapi/deps /usr/share/columnstore/cmapi/python/bin/python3 -m cmapi_server &> $LOG_PREFIX/cmapi_server.log &
-        echo "CMAPI PID = $!"
-
-        sleep 2
-
-        echo 'Adding primary node to CMAPI'
-        curl -s -X PUT https://127.0.0.1:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "127.0.0.1"}' -k &> /dev/null &
-    fi
-
     MARIADB_RUNNING=$(mariadb-admin ping)
     if [[ $MARIADB_RUNNING == *"alive"* ]]; then
         # Load Time Zone Data
@@ -278,6 +265,19 @@ if [[ $(hostname -s) == "$PM1" ]] || [[ $CLUSTER == false ]]; then
             echo 'ERROR: Securing MariaDB'
             exit 1
         fi
+    fi
+
+    if [[ $CLUSTER == false ]]; then
+        echo 'Starting CMAPI'
+        touch $LOG_PREFIX/cmapi_server.log && chmod 666 $LOG_PREFIX/cmapi_server.log
+        cd /usr/share/columnstore/cmapi || exit
+        PYTHONPATH=/usr/share/columnstore/cmapi/deps /usr/share/columnstore/cmapi/python/bin/python3 -m cmapi_server &> $LOG_PREFIX/cmapi_server.log &
+        echo "CMAPI PID = $!"
+
+        sleep 5
+
+        echo 'Adding primary node to CMAPI'
+        curl -s -X PUT https://${PM1}:8640/cmapi/0.4.0/cluster/node --header 'Content-Type:application/json' --header 'x-api-key:somekey123' --data '{"timeout":20, "node": "'${PM1}'"}' -k &> /dev/null &
     fi
 
     # Stop Primary Node
