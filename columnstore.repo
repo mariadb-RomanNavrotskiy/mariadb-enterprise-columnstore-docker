@@ -1,0 +1,5 @@
+[columnstore]
+name=columnstore
+baseurl=https://cspkg.s3.amazonaws.com/develop-6/latest/amd64/rockylinux8/
+enabled=1
+gpgcheck=0

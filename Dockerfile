@@ -8,11 +8,15 @@ ARG TOKEN=${TOKEN}
 ARG VERSION=${VERSION}
 
 # Add MariaDB Enterprise Repo
-RUN curl -LsS https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup | \
-    bash -s -- --mariadb-server-version=${VERSION} --token=${TOKEN} --apply
+#RUN curl -LsS https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup | \
+#    bash -s -- --mariadb-server-version=${VERSION} --token=${TOKEN} --apply
+
+COPY columnstore.repo /etc/yum.repos.d/
+
+RUN dnf module -y disable mysql mariadb
 
 # Update System
-RUN dnf -y install epel-release && \
+RUN dnf -y install epel-release ca-certificates && \
     dnf -y upgrade
 
 # Install Various Packages/Tools
@@ -66,7 +70,8 @@ RUN dnf -y install \
     mysql_tzinfo_to_sql /usr/share/zoneinfo | mariadb mysql && \
     /etc/init.d/mariadb stop && \
     dnf -y install MariaDB-columnstore-engine \
-    MariaDB-columnstore-cmapi
+    && dnf -y install https://cspkg.s3.amazonaws.com/cmapi/latest/MariaDB-columnstore-cmapi-1.6.2.x86_64.rpm
+#    MariaDB-columnstore-cmapi
 
 # Copy Config Files & Scripts To Image
 COPY config/etc/ /etc/
