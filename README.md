@@ -67,7 +67,8 @@ This project will produce a 3 node MariaDB Columnstore cluster fronted by a MaxS
 
 1.  ```$ git clone https://github.com/mariadb-corporation/mariadb-enterprise-columnstore-docker.git```
 1.  ```$ cd mariadb-enterprise-columnstore-docker```
-1.  Customize the included [.env](.env) file
+1.  ```$ cp .env_example .env```
+1.  Customize the new .env file
 1.  ```$ docker-compose up -d && docker exec -it mcs1 provision```
 
 If you have configured your .env file properly, you should now see an output like this:
